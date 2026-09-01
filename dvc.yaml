@@ -1,0 +1,69 @@
+stages:
+  download:
+    cmd: >-
+      uv run python -m purchase_propensity.data.download
+      --url ${data.url}
+      --sha256 ${data.sha256}
+      --output data/raw/online_shoppers_intention.csv
+    deps:
+      - src/purchase_propensity/data/download.py
+    params:
+      - data.url
+      - data.sha256
+    outs:
+      - data/raw/online_shoppers_intention.csv
+
+  prepare:
+    cmd: >-
+      uv run python -m purchase_propensity.data.prepare
+      --input data/raw/online_shoppers_intention.csv
+      --train-output data/processed/train.csv
+      --test-output data/processed/test.csv
+      --test-size ${split.test_size}
+      --random-state ${split.random_state}
+    deps:
+      - data/raw/online_shoppers_intention.csv
+      - src/purchase_propensity/data/prepare.py
+      - src/purchase_propensity/schema.py
+    params:
+      - split.test_size
+      - split.random_state
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  train:
+    cmd: >-
+      uv run python -m purchase_propensity.training.train
+      --train data/processed/train.csv
+      --test data/processed/test.csv
+      --model-output models/purchase_propensity.joblib
+      --metrics-output reports/metrics.json
+      --random-state ${split.random_state}
+      --cv-folds ${training.cv_folds}
+      --primary-metric ${training.primary_metric}
+      --tracking-uri ${mlflow.tracking_uri}
+      --experiment-name ${mlflow.experiment_name}
+      --registered-model-name ${mlflow.registered_model_name}
+      --model-alias ${mlflow.model_alias}
+    deps:
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - src/purchase_propensity/modeling/candidates.py
+      - src/purchase_propensity/modeling/metrics.py
+      - src/purchase_propensity/modeling/registry.py
+      - src/purchase_propensity/schema.py
+      - src/purchase_propensity/training/train.py
+    params:
+      - split.random_state
+      - training.cv_folds
+      - training.primary_metric
+      - mlflow.tracking_uri
+      - mlflow.experiment_name
+      - mlflow.registered_model_name
+      - mlflow.model_alias
+    outs:
+      - models/purchase_propensity.joblib
+    metrics:
+      - reports/metrics.json:
+          cache: false

@@ -1,0 +1,18 @@
+data:
+  url: https://archive.ics.uci.edu/static/public/468/online+shoppers+purchasing+intention+dataset.zip
+  sha256: b3055ee355f59134d851d32641183cb4a8b45def7124d2f50442a042f358e0d9
+
+split:
+  test_size: 0.20
+  random_state: 42
+
+training:
+  cv_folds: 5
+  primary_metric: cv_pr_auc_mean
+
+mlflow:
+  tracking_uri: sqlite:///mlflow.db
+  experiment_name: purchase-propensity
+  registered_model_name: purchase-propensity-classifier
+  model_alias: champion
+
