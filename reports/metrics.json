@@ -1,0 +1,43 @@
+{
+  "candidates": {
+    "logistic_regression": {
+      "cv_f1_mean": 0.6169135915619728,
+      "cv_f1_std": 0.0218678154431082,
+      "cv_pr_auc_mean": 0.6570605506434397,
+      "cv_pr_auc_std": 0.019742029366959287,
+      "cv_precision_mean": 0.5172799241827984,
+      "cv_precision_std": 0.02585380232679913,
+      "cv_recall_mean": 0.7647423122254366,
+      "cv_recall_std": 0.01337562759524382,
+      "cv_roc_auc_mean": 0.9044120562492008,
+      "cv_roc_auc_std": 0.00649615152314887
+    },
+    "random_forest": {
+      "cv_f1_mean": 0.6691310288986893,
+      "cv_f1_std": 0.01644345640154078,
+      "cv_pr_auc_mean": 0.7222430494197848,
+      "cv_pr_auc_std": 0.01976451644217888,
+      "cv_precision_mean": 0.559682078863744,
+      "cv_precision_std": 0.022718301822498177,
+      "cv_recall_mean": 0.8328833172613308,
+      "cv_recall_std": 0.01435017260311301,
+      "cv_roc_auc_mean": 0.9274558312704928,
+      "cv_roc_auc_std": 0.004399360590716377
+    }
+  },
+  "champion": {
+    "name": "random_forest",
+    "test_accuracy": 0.8637469586374696,
+    "test_f1": 0.6463157894736842,
+    "test_pr_auc": 0.7065683227051203,
+    "test_precision": 0.5404929577464789,
+    "test_recall": 0.8036649214659686,
+    "test_roc_auc": 0.9190303082071328
+  },
+  "dataset": {
+    "test_purchase_rate": 0.1549067315490673,
+    "test_rows": 2466,
+    "train_purchase_rate": 0.15470397404703973,
+    "train_rows": 9864
+  }
+}
