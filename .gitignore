@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local configuration
+.env
+
+# MLflow local state
+mlflow.db
+mlruns/
+mlartifacts/
+
+# DVC cache and generated pipeline outputs
+/.dvc/cache/
+/data/raw/*.csv
+/data/processed/*.csv
+/models/*.joblib
+
+# OS and IDE
+.DS_Store
+.idea/
+.vscode/
+
