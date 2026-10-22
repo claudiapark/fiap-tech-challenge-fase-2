@@ -41,6 +41,7 @@ jobs:
 
   docker-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,7 +54,42 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: purchase-propensity:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Start container
+        run: >-
+          docker run --detach
+          --name purchase-propensity-ci
+          --publish 5000:5000
+          purchase-propensity:ci
+
+      - name: Wait for healthy container
+        shell: bash
+        run: |
+          for attempt in {1..60}; do
+            status="$(docker inspect --format='{{.State.Health.Status}}' purchase-propensity-ci)"
+            echo "Health status: ${status} (attempt ${attempt}/60)"
+            if [ "${status}" = "healthy" ]; then
+              curl --fail --silent --show-error http://127.0.0.1:5000/health
+              exit 0
+            fi
+            if [ "${status}" = "unhealthy" ]; then
+              docker logs purchase-propensity-ci
+              exit 1
+            fi
+            sleep 5
+          done
+          docker logs purchase-propensity-ci
+          exit 1
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs purchase-propensity-ci || true
+
+      - name: Stop container
+        if: always()
+        run: docker rm --force purchase-propensity-ci || true
 
