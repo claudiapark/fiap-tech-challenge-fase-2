@@ -16,6 +16,10 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
+# The Git metadata is intentionally excluded from the image. Reinitialize DVC
+# in no-SCM mode inside the container so `dvc repro` remains executable.
+RUN uv run --no-dev dvc init --no-scm --force
+
 EXPOSE 5000
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=90s --retries=6 \
