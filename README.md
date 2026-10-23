@@ -123,7 +123,9 @@ docker build -t purchase-propensity:latest .
 docker run --rm -p 5000:5000 purchase-propensity:latest
 ```
 
-O contêiner reproduz o pipeline e inicia o MLflow em <http://127.0.0.1:5000>.
+O contêiner reproduz o pipeline, inicia o MLflow em <http://127.0.0.1:5000> e expõe
+um `HEALTHCHECK`. A CI constrói a imagem, inicia o contêiner e aguarda o estado
+`healthy`, validando não apenas o build, mas também a execução.
 
 ## Qualidade e testes
 
@@ -133,7 +135,8 @@ uv run ruff check .
 uv run pytest
 ```
 
-A CI repete lint, 20 testes, cobertura mínima de 80%, `dvc repro` e build do Docker em pushes e pull requests.
+A CI repete lint, 20 testes, cobertura mínima de 80%, `dvc repro`, build do Docker e
+um smoke test do contêiner em pushes e pull requests.
 
 ## Configuração
 
@@ -163,3 +166,36 @@ Consulte o [Model Card](docs/MODEL_CARD.md) para detalhes de uso responsável.
 - [Arquitetura e decisões](docs/ARCHITECTURE.md)
 - [Model Card](docs/MODEL_CARD.md)
 - [Roteiro do vídeo STAR](docs/VIDEO_STAR.md)
+
+## Vídeo STAR
+
+O vídeo de até cinco minutos é parte obrigatória da entrega. O roteiro completo,
+com comandos, telas e divisão por tempo, está em [`docs/VIDEO_STAR.md`](docs/VIDEO_STAR.md).
+
+> **Status:** gravação e publicação pendentes. Após publicar como **não listado**,
+> substitua este aviso pelo link final e confirme que ele abre em uma janela anônima.
+
+## Equipe
+
+| GitHub |
+|---|
+| [@claudiapark](https://github.com/claudiapark) |
+| [@SamuelCambui](https://github.com/SamuelCambui) |
+| [@LincolnLN](https://github.com/LincolnLN) |
+| [@Leoosantoszl](https://github.com/Leoosantoszl) |
+| [@Lucaskjkk](https://github.com/Lucaskjkk) |
+
+As contribuições devem ser feitas em branches individuais e integradas por Pull
+Request, mantendo no histórico a responsabilidade real de cada integrante.
+
+## Checklist de entrega
+
+- [x] ambiente reproduzível com `uv` e lock file;
+- [x] pipeline DVC `download -> prepare -> train`;
+- [x] MLflow Tracking e Model Registry com alias `champion`;
+- [x] Docker com verificação de saúde;
+- [x] lint, testes, cobertura e pipeline automatizados na CI;
+- [x] README, arquitetura e Model Card;
+- [ ] contribuições reais dos integrantes registradas por Pull Requests;
+- [ ] vídeo STAR publicado e link adicionado acima;
+- [ ] link do repositório e do vídeo enviados na plataforma da FIAP.
