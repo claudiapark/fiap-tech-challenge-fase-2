@@ -39,7 +39,6 @@ def fitted_result(sample_dataset: pd.DataFrame, name: str = "candidate") -> Cand
     )
 
 
-
 def test_load_select_evaluate_and_save(tmp_path: Path, sample_dataset: pd.DataFrame) -> None:
     source = tmp_path / "split.csv"
     sample_dataset.to_csv(source, index=False)

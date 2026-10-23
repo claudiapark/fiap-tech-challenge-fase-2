@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from purchase_propensity.modeling.quality_gate import validate_report
+
 import joblib
 import mlflow
 import mlflow.sklearn
@@ -21,6 +21,7 @@ from purchase_propensity.modeling.metrics import (
     classification_metrics,
     summarize_cross_validation,
 )
+from purchase_propensity.modeling.quality_gate import validate_report
 from purchase_propensity.modeling.registry import register_champion
 from purchase_propensity.schema import FEATURE_COLUMNS, TARGET_COLUMN
 
@@ -214,7 +215,6 @@ def run_training(args: argparse.Namespace) -> dict[str, Any]:
     return report
 
 
-
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -229,7 +229,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--experiment-name", required=True)
     parser.add_argument("--registered-model-name", required=True)
     parser.add_argument("--model-alias", required=True)
-    parser.add_argument("--minimum-metric-score",type=float,default=0.50)
+    parser.add_argument("--minimum-metric-score", type=float, default=0.50)
     return parser.parse_args()
 
 

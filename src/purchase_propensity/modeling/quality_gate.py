@@ -50,9 +50,7 @@ def validate_report(
         elif not 0.0 <= value <= 1.0:
             violations.append(f"{metric}: value {value} is outside [0, 1]")
         elif value < minimum_score:
-            violations.append(
-                f"{metric}: {value:.3f} is below {minimum_score:.0%}"
-            )
+            violations.append(f"{metric}: {value:.3f} is below {minimum_score:.0%}")
 
     return violations
 
@@ -73,10 +71,7 @@ def check_report(
             "Model promotion has been blocked."
         )
 
-    print(
-        f"MODEL QUALITY GATE PASSED: all required metrics are at least "
-        f"{minimum_score:.0%}."
-    )
+    print(f"MODEL QUALITY GATE PASSED: all required metrics are at least {minimum_score:.0%}.")
 
 
 def main() -> None:
