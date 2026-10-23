@@ -17,8 +17,26 @@ from purchase_propensity.training.train import CandidateResult
 def fitted_result(sample_dataset: pd.DataFrame, name: str = "candidate") -> CandidateResult:
     """Create a fitted candidate result for helper tests."""
     model = build_candidates(42)[0].estimator
-    model.fit(sample_dataset[FEATURE_COLUMNS], sample_dataset[TARGET_COLUMN].astype(int))
-    return CandidateResult(name, model, {"cv_pr_auc_mean": 0.7}, "run-id", "runs:/run/model")
+    model.fit(
+        sample_dataset[FEATURE_COLUMNS],
+        sample_dataset[TARGET_COLUMN].astype(int),
+    )
+
+    metrics = {
+        "cv_pr_auc_mean": 0.70,
+        "cv_precision_mean": 0.70,
+        "cv_recall_mean": 0.70,
+        "cv_f1_mean": 0.70,
+        "cv_roc_auc_mean": 0.70,
+    }
+
+    return CandidateResult(
+        name,
+        model,
+        metrics,
+        "run-id",
+        "runs:/run/model",
+    )
 
 
 def test_load_select_evaluate_and_save(tmp_path: Path, sample_dataset: pd.DataFrame) -> None:
@@ -89,7 +107,6 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
     result = fitted_result(sample_dataset)
     monkeypatch.setattr(train, "configure_mlflow", lambda *_: None)
     monkeypatch.setattr(train, "evaluate_candidate", lambda *_: result)
-    monkeypatch.setattr(train, "evaluate_holdout", lambda *_: {"test_pr_auc": 0.7})
     monkeypatch.setattr(train, "log_champion_metrics", lambda *_: None)
     monkeypatch.setattr(train, "register_champion", lambda *_: "2")
     captured: list[object] = []
@@ -106,6 +123,7 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
         experiment_name="test",
         registered_model_name="model",
         model_alias="champion",
+        minimum_metric_score=0.50,
     )
     report = train.run_training(args)
     assert report["champion"]["name"] == "candidate"

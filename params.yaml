@@ -16,3 +16,5 @@ mlflow:
   registered_model_name: purchase-propensity-classifier
   model_alias: champion
 
+quality_gate:
+  minimum_metric_score: 0.50

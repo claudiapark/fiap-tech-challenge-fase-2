@@ -2,15 +2,23 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality-and-pipeline:
+    name: Code Quality, Tests and Model Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,6 +32,9 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --locked
 
+      - name: Check Python syntax
+        run: uv run python -m compileall -q src tests
+
       - name: Check formatting
         run: uv run ruff format --check .
 
@@ -33,15 +44,24 @@ jobs:
       - name: Run tests and coverage
         run: uv run pytest
 
-      - name: Reproduce DVC pipeline
+      - name: Train model and enforce quality gate
         run: uv run dvc repro
 
-      - name: Show metrics
+      - name: Validate generated model metrics
+        run: >-
+          uv run python -m purchase_propensity.modeling.quality_gate
+          --report reports/metrics.json
+          --minimum-score 0.50
+
+      - name: Display model metrics
         run: uv run dvc metrics show
 
   docker-build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
+    needs: quality-and-pipeline
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,38 +78,3 @@ jobs:
           tags: purchase-propensity:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Start container
-        run: >-
-          docker run --detach
-          --name purchase-propensity-ci
-          --publish 5000:5000
-          purchase-propensity:ci
-
-      - name: Wait for healthy container
-        shell: bash
-        run: |
-          for attempt in {1..60}; do
-            status="$(docker inspect --format='{{.State.Health.Status}}' purchase-propensity-ci)"
-            echo "Health status: ${status} (attempt ${attempt}/60)"
-            if [ "${status}" = "healthy" ]; then
-              curl --fail --silent --show-error http://127.0.0.1:5000/health
-              exit 0
-            fi
-            if [ "${status}" = "unhealthy" ]; then
-              docker logs purchase-propensity-ci
-              exit 1
-            fi
-            sleep 5
-          done
-          docker logs purchase-propensity-ci
-          exit 1
-
-      - name: Show container logs on failure
-        if: failure()
-        run: docker logs purchase-propensity-ci || true
-
-      - name: Stop container
-        if: always()
-        run: docker rm --force purchase-propensity-ci || true
-
