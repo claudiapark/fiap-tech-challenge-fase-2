@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, develop]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,9 +15,10 @@ concurrency:
 
 jobs:
   quality-and-pipeline:
-    name: Quality, API tests and DVC pipeline
+    name: Code Quality, Tests and Model Quality Gate
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,20 +41,27 @@ jobs:
       - name: Run lint
         run: uv run ruff check .
 
-      - name: Run unit, API contract and coverage tests
+      - name: Run tests and coverage
         run: uv run pytest
 
-      - name: Reproduce DVC pipeline and register model
+      - name: Train model and enforce quality gate
         run: uv run dvc repro
 
-      - name: Show tracked model metrics
+      - name: Validate generated model metrics
+        run: >-
+          uv run python -m purchase_propensity.modeling.quality_gate
+          --report reports/metrics.json
+          --minimum-score 0.50
+
+      - name: Display model metrics
         run: uv run dvc metrics show
 
   docker-build:
-    name: MLflow image
+    name: Build Docker Image
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: quality-and-pipeline
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4

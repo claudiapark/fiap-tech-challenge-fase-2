@@ -51,6 +51,7 @@ stages:
       - data/processed/test.csv
       - src/purchase_propensity/modeling/candidates.py
       - src/purchase_propensity/modeling/metrics.py
+      - src/purchase_propensity/modeling/quality_gate.py
       - src/purchase_propensity/modeling/registry.py
       - src/purchase_propensity/schema.py
       - src/purchase_propensity/training/train.py
@@ -58,6 +59,7 @@ stages:
       - split.random_state
       - training.cv_folds
       - training.primary_metric
+      - quality_gate.minimum_metric_score
       - mlflow.tracking_uri
       - mlflow.experiment_name
       - mlflow.registered_model_name
