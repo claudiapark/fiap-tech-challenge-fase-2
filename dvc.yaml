@@ -43,6 +43,7 @@ stages:
       --cv-folds ${training.cv_folds}
       --primary-metric ${training.primary_metric}
       --threshold ${evaluation.threshold}
+      --minimum-metric-score ${quality_gate.minimum_metric_score}
       --tracking-uri ${mlflow.tracking_uri}
       --experiment-name ${mlflow.experiment_name}
       --registered-model-name ${mlflow.registered_model_name}
@@ -52,6 +53,7 @@ stages:
       - data/processed/test.csv
       - src/purchase_propensity/modeling/candidates.py
       - src/purchase_propensity/modeling/metrics.py
+      - src/purchase_propensity/modeling/quality_gate.py
       - src/purchase_propensity/modeling/registry.py
       - src/purchase_propensity/schema.py
       - src/purchase_propensity/training/train.py
@@ -60,6 +62,7 @@ stages:
       - training.cv_folds
       - training.primary_metric
       - evaluation.threshold
+      - quality_gate.minimum_metric_score
       - mlflow.tracking_uri
       - mlflow.experiment_name
       - mlflow.registered_model_name

@@ -43,7 +43,7 @@ O teste terminou com sucesso e produziu, a partir do zero:
 - métricas versionadas em `reports/metrics.json`;
 - runs no experimento `purchase-propensity`;
 - modelo `purchase-propensity-classifier` registrado com o alias `champion`;
-- 21 testes aprovados e cobertura total superior a 80%.
+- 26 testes aprovados e cobertura total de 80,53%.
 
 A Random Forest foi novamente selecionada por `cv_pr_auc_mean=0,7222`. No holdout, o
 resultado reproduzido foi `PR-AUC=0,7066`, `ROC-AUC=0,9190`, `recall=0,8037` e `F1=0,6463`.

@@ -157,8 +157,12 @@ uv run ruff check .
 uv run pytest
 ```
 
-A CI repete lint, 21 testes, cobertura mínima de 80%, `dvc repro`, build do Docker e
-um smoke test do contêiner em pushes e pull requests.
+A CI verifica sintaxe, formatação, lint, 26 testes com cobertura mínima de 80%, `dvc repro`,
+quality gate do modelo, build do Docker e um smoke test do contêiner em pushes e pull
+requests. Execuções concorrentes da mesma branch são canceladas para economizar tempo de CI.
+
+O quality gate bloqueia o registro do campeão quando uma métrica obrigatória fica abaixo de
+`quality_gate.minimum_metric_score`, atualmente `0,50` em `params.yaml`.
 
 ## Configuração
 
@@ -219,6 +223,7 @@ Request, mantendo no histórico a responsabilidade real de cada integrante.
 - [x] MLflow Tracking e Model Registry com alias `champion`;
 - [x] Docker com verificação de saúde;
 - [x] lint, testes, cobertura e pipeline automatizados na CI;
+- [x] quality gate antes da promoção do modelo;
 - [x] README, arquitetura e Model Card;
 - [x] reprodução validada em clone limpo e evidências do MLflow;
 - [ ] contribuições reais dos integrantes registradas por Pull Requests;
