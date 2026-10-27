@@ -42,6 +42,7 @@ stages:
       --random-state ${split.random_state}
       --cv-folds ${training.cv_folds}
       --primary-metric ${training.primary_metric}
+      --threshold ${evaluation.threshold}
       --tracking-uri ${mlflow.tracking_uri}
       --experiment-name ${mlflow.experiment_name}
       --registered-model-name ${mlflow.registered_model_name}
@@ -58,6 +59,7 @@ stages:
       - split.random_state
       - training.cv_folds
       - training.primary_metric
+      - evaluation.threshold
       - mlflow.tracking_uri
       - mlflow.experiment_name
       - mlflow.registered_model_name

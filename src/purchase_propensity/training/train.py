@@ -101,20 +101,28 @@ def select_champion(results: list[CandidateResult], primary_metric: str) -> Cand
 
 
 def evaluate_holdout(
-    champion: CandidateResult, test_features: pd.DataFrame, test_target: pd.Series
+    champion: CandidateResult,
+    test_features: pd.DataFrame,
+    test_target: pd.Series,
+    threshold: float = 0.5,
 ) -> dict[str, float]:
     """Evaluate only the selected model on the untouched holdout split."""
-    predictions = champion.model.predict(test_features)
+    if not 0 <= threshold <= 1:
+        raise ValueError("Threshold must be between 0 and 1")
     probabilities = champion.model.predict_proba(test_features)[:, 1]
-    return classification_metrics(
+    predictions = (probabilities >= threshold).astype(int)
+    metrics = classification_metrics(
         test_target.to_numpy(), predictions.astype(int), probabilities.astype(float)
     )
+    metrics["test_decision_threshold"] = float(threshold)
+    return metrics
 
 
 def log_champion_metrics(champion: CandidateResult, metrics: dict[str, float]) -> None:
     """Attach final holdout evidence to the selected candidate run."""
     with mlflow.start_run(run_id=champion.run_id):
         mlflow.log_metrics(metrics)
+        mlflow.log_param("decision_threshold", metrics["test_decision_threshold"])
         mlflow.set_tags({"selected": "true", "stage": "champion"})
 
 
@@ -162,7 +170,7 @@ def run_training(args: argparse.Namespace) -> dict[str, Any]:
         for candidate in build_candidates(args.random_state)
     ]
     champion = select_champion(results, args.primary_metric)
-    test_metrics = evaluate_holdout(champion, test_features, test_target)
+    test_metrics = evaluate_holdout(champion, test_features, test_target, args.threshold)
     log_champion_metrics(champion, test_metrics)
     register_champion(champion.model_uri, args.registered_model_name, args.model_alias)
     report = build_report(results, champion, test_metrics, train_target, test_target)
@@ -180,6 +188,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--random-state", required=True, type=int)
     parser.add_argument("--cv-folds", required=True, type=int)
     parser.add_argument("--primary-metric", default="cv_pr_auc_mean")
+    parser.add_argument("--threshold", default=0.5, type=float)
     parser.add_argument("--tracking-uri", required=True)
     parser.add_argument("--experiment-name", required=True)
     parser.add_argument("--registered-model-name", required=True)
