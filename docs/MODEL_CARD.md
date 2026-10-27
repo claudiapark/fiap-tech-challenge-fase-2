@@ -77,5 +77,9 @@ Ordenar ou segmentar sessões para análises e ações comerciais assistidas. A 
 
 ## Governança
 
-Parâmetros e métricas são rastreados no MLflow. O campeão é registrado com assinatura e exemplo de entrada, recebe alias `champion` e pode ser substituído sem alterar consumidores que usem o alias. Dados, código, parâmetros e outputs do pipeline são relacionados por Git, `params.yaml`, `dvc.yaml` e `dvc.lock`.
+Parâmetros e métricas são rastreados no MLflow. Antes da promoção, um quality gate exige que
+as métricas obrigatórias atinjam o mínimo configurado em `params.yaml`. O campeão é registrado
+com assinatura e exemplo de entrada, recebe alias `champion` e pode ser substituído sem alterar
+consumidores que usem o alias. Dados, código, parâmetros e outputs do pipeline são relacionados
+por Git, `params.yaml`, `dvc.yaml` e `dvc.lock`.
 

@@ -21,6 +21,7 @@ from purchase_propensity.modeling.metrics import (
     classification_metrics,
     summarize_cross_validation,
 )
+from purchase_propensity.modeling.quality_gate import validate_report
 from purchase_propensity.modeling.registry import register_champion
 from purchase_propensity.schema import FEATURE_COLUMNS, TARGET_COLUMN
 
@@ -160,21 +161,65 @@ def save_outputs(
 
 
 def run_training(args: argparse.Namespace) -> dict[str, Any]:
-    """Execute the controlled experiment and model registration workflow."""
+    """Train, evaluate and promote only a model that passes the quality gate."""
     train_features, train_target = load_split(args.train)
     test_features, test_target = load_split(args.test)
+
     configure_mlflow(args.tracking_uri, args.experiment_name)
-    cross_validator = StratifiedKFold(args.cv_folds, shuffle=True, random_state=args.random_state)
+
+    cross_validator = StratifiedKFold(
+        args.cv_folds,
+        shuffle=True,
+        random_state=args.random_state,
+    )
+
     results = [
         evaluate_candidate(candidate, train_features, train_target, cross_validator)
         for candidate in build_candidates(args.random_state)
     ]
+
     champion = select_champion(results, args.primary_metric)
     test_metrics = evaluate_holdout(champion, test_features, test_target, args.threshold)
     log_champion_metrics(champion, test_metrics)
-    register_champion(champion.model_uri, args.registered_model_name, args.model_alias)
-    report = build_report(results, champion, test_metrics, train_target, test_target)
-    save_outputs(champion.model, report, args.model_output, args.metrics_output)
+
+    report = build_report(
+        results,
+        champion,
+        test_metrics,
+        train_target,
+        test_target,
+    )
+
+    # Salva as métricas para auditoria mesmo se o gate reprovar o modelo.
+    save_outputs(
+        champion.model,
+        report,
+        args.model_output,
+        args.metrics_output,
+    )
+
+    # O bloqueio ocorre antes de promover o modelo no MLflow.
+    violations = validate_report(report, args.minimum_metric_score)
+
+    if violations:
+        details = "\n - ".join(violations)
+        raise RuntimeError(
+            f"MODEL QUALITY GATE FAILED: minimum allowed metric is "
+            f"{args.minimum_metric_score:.0%}.\n - {details}\n"
+            "Model promotion has been blocked."
+        )
+
+    print(
+        f"MODEL QUALITY GATE PASSED: all required metrics are at least "
+        f"{args.minimum_metric_score:.0%}."
+    )
+
+    register_champion(
+        champion.model_uri,
+        args.registered_model_name,
+        args.model_alias,
+    )
+
     return report
 
 
@@ -193,6 +238,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--experiment-name", required=True)
     parser.add_argument("--registered-model-name", required=True)
     parser.add_argument("--model-alias", required=True)
+    parser.add_argument("--minimum-metric-score", type=float, default=0.50)
     return parser.parse_args()
 
 

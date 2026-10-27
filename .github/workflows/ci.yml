@@ -2,27 +2,39 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality-and-pipeline:
+    name: Code Quality, Tests and Model Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           python-version: "3.12"
           enable-cache: true
+          cache-dependency-glob: uv.lock
 
       - name: Install locked dependencies
         run: uv sync --locked
+
+      - name: Check Python syntax
+        run: uv run python -m compileall -q src tests
 
       - name: Check formatting
         run: uv run ruff format --check .
@@ -33,24 +45,33 @@ jobs:
       - name: Run tests and coverage
         run: uv run pytest
 
-      - name: Reproduce DVC pipeline
+      - name: Train model and enforce quality gate
         run: uv run dvc repro
 
-      - name: Show metrics
+      - name: Validate generated model metrics
+        run: >-
+          uv run python -m purchase_propensity.modeling.quality_gate
+          --report reports/metrics.json
+          --minimum-score 0.50
+
+      - name: Display model metrics
         run: uv run dvc metrics show
 
   docker-build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
+    needs: quality-and-pipeline
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: false
@@ -92,4 +113,3 @@ jobs:
       - name: Stop container
         if: always()
         run: docker rm --force purchase-propensity-ci || true
-

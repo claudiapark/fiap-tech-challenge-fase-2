@@ -57,9 +57,9 @@ stages:
       data/processed/train.csv --test data/processed/test.csv --model-output
       models/purchase_propensity.joblib --metrics-output reports/metrics.json
       --random-state 42 --cv-folds 5 --primary-metric cv_pr_auc_mean --threshold
-      0.5 --tracking-uri sqlite:///mlflow.db --experiment-name
-      purchase-propensity --registered-model-name purchase-propensity-classifier
-      --model-alias champion
+      0.5 --minimum-metric-score 0.5 --tracking-uri sqlite:///mlflow.db
+      --experiment-name purchase-propensity --registered-model-name
+      purchase-propensity-classifier --model-alias champion
     deps:
     - path: data/processed/test.csv
       hash: md5
@@ -77,6 +77,10 @@ stages:
       hash: md5
       md5: afbe96096d2d1a657c2bd4663db52afb
       size: 1942
+    - path: src/purchase_propensity/modeling/quality_gate.py
+      hash: md5
+      md5: 4093d9759baed37c2277cd1b94981804
+      size: 2636
     - path: src/purchase_propensity/modeling/registry.py
       hash: md5
       md5: f88a36bdd136fc10e5821c3dca671528
@@ -87,8 +91,8 @@ stages:
       size: 602
     - path: src/purchase_propensity/training/train.py
       hash: md5
-      md5: d64a225f37efb7d5ee9cb261eb6227f5
-      size: 7779
+      md5: ef4437a2b17a43824a57f4e8dc53c840
+      size: 8708
     params:
       params.yaml:
         evaluation.threshold: 0.5
@@ -96,6 +100,7 @@ stages:
         mlflow.model_alias: champion
         mlflow.registered_model_name: purchase-propensity-classifier
         mlflow.tracking_uri: sqlite:///mlflow.db
+        quality_gate.minimum_metric_score: 0.5
         split.random_state: 42
         training.cv_folds: 5
         training.primary_metric: cv_pr_auc_mean
