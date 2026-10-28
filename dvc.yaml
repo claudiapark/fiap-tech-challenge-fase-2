@@ -42,6 +42,8 @@ stages:
       --random-state ${split.random_state}
       --cv-folds ${training.cv_folds}
       --primary-metric ${training.primary_metric}
+      --threshold ${evaluation.threshold}
+      --minimum-metric-score ${quality_gate.minimum_metric_score}
       --tracking-uri ${mlflow.tracking_uri}
       --experiment-name ${mlflow.experiment_name}
       --registered-model-name ${mlflow.registered_model_name}

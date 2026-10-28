@@ -28,11 +28,16 @@
   "champion": {
     "name": "random_forest",
     "test_accuracy": 0.8637469586374696,
+    "test_decision_threshold": 0.5,
     "test_f1": 0.6463157894736842,
+    "test_false_negatives": 75.0,
+    "test_false_positives": 261.0,
     "test_pr_auc": 0.7065683227051203,
     "test_precision": 0.5404929577464789,
     "test_recall": 0.8036649214659686,
-    "test_roc_auc": 0.9190303082071328
+    "test_roc_auc": 0.9190303082071328,
+    "test_true_negatives": 1823.0,
+    "test_true_positives": 307.0
   },
   "dataset": {
     "test_purchase_rate": 0.1549067315490673,

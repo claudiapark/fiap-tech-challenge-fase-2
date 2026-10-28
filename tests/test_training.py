@@ -63,6 +63,13 @@ def test_unknown_primary_metric_raises(sample_dataset: pd.DataFrame) -> None:
         train.select_champion([fitted_result(sample_dataset)], "missing")
 
 
+def test_evaluate_holdout_rejects_invalid_threshold(sample_dataset: pd.DataFrame) -> None:
+    features = sample_dataset[FEATURE_COLUMNS]
+    target = sample_dataset[TARGET_COLUMN].astype(int)
+    with pytest.raises(ValueError, match="Threshold must be between 0 and 1"):
+        train.evaluate_holdout(fitted_result(sample_dataset), features, target, 1.1)
+
+
 def test_evaluate_candidate_uses_cross_validation(sample_dataset, monkeypatch) -> None:
     monkeypatch.setattr(train, "log_candidate", lambda *_: ("run", "runs:/run/model"))
     candidate = build_candidates(42)[0]
@@ -92,11 +99,18 @@ def test_configure_and_log_champion(monkeypatch, sample_dataset) -> None:
 
     monkeypatch.setattr(train.mlflow, "start_run", lambda **_: RunContext())
     monkeypatch.setattr(train.mlflow, "log_metrics", lambda value: calls.append(("metrics", value)))
+    monkeypatch.setattr(
+        train.mlflow, "log_param", lambda key, value: calls.append(("param", key, value))
+    )
     monkeypatch.setattr(train.mlflow, "set_tags", lambda value: calls.append(("tags", value)))
     train.configure_mlflow("sqlite:///test.db", "experiment")
-    train.log_champion_metrics(fitted_result(sample_dataset), {"test_pr_auc": 0.7})
+    train.log_champion_metrics(
+        fitted_result(sample_dataset),
+        {"test_pr_auc": 0.7, "test_decision_threshold": 0.5},
+    )
     assert ("uri", "sqlite:///test.db") in calls
     assert any(call[0] == "metrics" for call in calls)
+    assert ("param", "decision_threshold", 0.5) in calls
 
 
 def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkeypatch) -> None:
@@ -119,6 +133,7 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
         random_state=42,
         cv_folds=2,
         primary_metric="cv_pr_auc_mean",
+        threshold=0.5,
         tracking_uri="sqlite:///test.db",
         experiment_name="test",
         registered_model_name="model",
