@@ -10,6 +10,9 @@ training:
   cv_folds: 5
   primary_metric: cv_pr_auc_mean
 
+evaluation:
+  threshold: 0.5
+
 mlflow:
   tracking_uri: sqlite:///mlflow.db
   experiment_name: purchase-propensity

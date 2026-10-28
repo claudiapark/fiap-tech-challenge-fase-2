@@ -49,6 +49,17 @@ Métricas finais da Random Forest no holdout:
 |---:|---:|---:|---:|---:|---:|
 | 0,8637 | 0,5405 | 0,8037 | 0,6463 | 0,9190 | 0,7066 |
 
+Matriz de confusão com threshold `0,5`:
+
+| Real \ Predito | Não compra | Compra |
+|---|---:|---:|
+| Não compra | 1.823 | 261 |
+| Compra | 75 | 307 |
+
+Os 261 falsos positivos podem gerar abordagens ou incentivos sem conversão; os 75 falsos
+negativos representam compras reais que deixariam de ser priorizadas. O threshold `0,5` é um
+baseline explícito em `params.yaml`, ainda não otimizado por uma função de custo do negócio.
+
 A Random Forest é registrada como `purchase-propensity-classifier` e recebe o alias `champion`. Os valores completos estão em [`reports/metrics.json`](reports/metrics.json).
 
 ## Estrutura
@@ -61,7 +72,9 @@ A Random Forest é registrada como `purchase-propensity-classifier` e recebe o a
 │   └── processed/
 ├── docs/
 │   ├── ARCHITECTURE.md
+│   ├── MLFLOW_REGISTRY.md
 │   ├── MODEL_CARD.md
+│   ├── REPRODUCIBILITY.md
 │   └── VIDEO_STAR.md
 ├── models/
 ├── reports/metrics.json
@@ -116,6 +129,15 @@ uv run mlflow server \
 
 Acesse <http://127.0.0.1:5000>. Em **Experiments**, compare as runs; em **Models**, abra `purchase-propensity-classifier` e confira o alias `champion`.
 
+### Evidências da execução
+
+![Runs do experimento purchase-propensity](docs/images/mlflow-experiments.png)
+
+![Model Registry com alias champion](docs/images/mlflow-model-registry.png)
+
+Os parâmetros, métricas e passos de conferência estão documentados em
+[`docs/MLFLOW_REGISTRY.md`](docs/MLFLOW_REGISTRY.md).
+
 ## Docker
 
 ```bash
@@ -135,8 +157,12 @@ uv run ruff check .
 uv run pytest
 ```
 
-A CI repete lint, 20 testes, cobertura mínima de 80%, `dvc repro`, build do Docker e
-um smoke test do contêiner em pushes e pull requests.
+A CI verifica sintaxe, formatação, lint, 26 testes com cobertura mínima de 80%, `dvc repro`,
+quality gate do modelo, build do Docker e um smoke test do contêiner em pushes e pull
+requests. Execuções concorrentes da mesma branch são canceladas para economizar tempo de CI.
+
+O quality gate bloqueia o registro do campeão quando uma métrica obrigatória fica abaixo de
+`quality_gate.minimum_metric_score`, atualmente `0,50` em `params.yaml`.
 
 ## Configuração
 
@@ -165,6 +191,8 @@ Consulte o [Model Card](docs/MODEL_CARD.md) para detalhes de uso responsável.
 
 - [Arquitetura e decisões](docs/ARCHITECTURE.md)
 - [Model Card](docs/MODEL_CARD.md)
+- [Relatório de reprodutibilidade](docs/REPRODUCIBILITY.md)
+- [Evidências do MLflow e Model Registry](docs/MLFLOW_REGISTRY.md)
 - [Roteiro do vídeo STAR](docs/VIDEO_STAR.md)
 
 ## Vídeo STAR
@@ -195,7 +223,9 @@ Request, mantendo no histórico a responsabilidade real de cada integrante.
 - [x] MLflow Tracking e Model Registry com alias `champion`;
 - [x] Docker com verificação de saúde;
 - [x] lint, testes, cobertura e pipeline automatizados na CI;
+- [x] quality gate antes da promoção do modelo;
 - [x] README, arquitetura e Model Card;
+- [x] reprodução validada em clone limpo e evidências do MLflow;
 - [ ] contribuições reais dos integrantes registradas por Pull Requests;
 - [ ] vídeo STAR publicado e link adicionado acima;
 - [ ] link do repositório e do vídeo enviados na plataforma da FIAP.

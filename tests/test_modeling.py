@@ -32,8 +32,16 @@ def test_classification_metrics_are_complete() -> None:
         "test_f1",
         "test_roc_auc",
         "test_pr_auc",
+        "test_true_negatives",
+        "test_false_positives",
+        "test_false_negatives",
+        "test_true_positives",
     }
     assert metrics["test_recall"] == 1.0
+    assert metrics["test_true_negatives"] == 1.0
+    assert metrics["test_false_positives"] == 1.0
+    assert metrics["test_false_negatives"] == 0.0
+    assert metrics["test_true_positives"] == 2.0
 
 
 def test_cross_validation_summary_contains_mean_and_std() -> None:

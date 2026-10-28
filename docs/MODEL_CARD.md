@@ -32,6 +32,29 @@ As transformações são ajustadas dentro da Pipeline Scikit-Learn:
 | ROC-AUC | 0,9190 |
 | PR-AUC | 0,7066 |
 
+### Matriz de confusão
+
+Com threshold de 0,5, a matriz do holdout contém 2.466 sessões. As linhas representam o valor
+real e as colunas, a predição:
+
+| Real \ Predito | Não compra | Compra |
+|---|---:|---:|
+| Não compra | 1.823 (VN) | 261 (FP) |
+| Compra | 75 (FN) | 307 (VP) |
+
+- **Falso positivo (261):** o modelo indica propensão, mas a sessão não compra. Para o negócio,
+  isso pode consumir verba de mídia, desconto ou capacidade do time comercial sem conversão.
+- **Falso negativo (75):** o modelo não sinaliza uma sessão que acaba comprando. O negócio pode
+  deixar de priorizar uma oportunidade real, embora não necessariamente perca a venda orgânica.
+
+### Threshold de decisão
+
+O valor `0,5` é declarado em `params.yaml`, usado para converter a probabilidade em classe e
+registrado no MLflow. Ele foi mantido como baseline interpretável, não como ótimo econômico. Em
+produção, a escolha deve considerar o custo de abordagem e a margem incremental: reduzir o
+threshold tende a aumentar o recall e os falsos positivos; aumentá-lo tende a elevar a precisão
+e os falsos negativos. Uma mudança exige nova avaliação e aprovação do negócio.
+
 ## Uso pretendido
 
 Ordenar ou segmentar sessões para análises e ações comerciais assistidas. A saída é um sinal de apoio e precisa ser combinada com capacidade operacional, custo de abordagem e revisão de negócio.
@@ -46,7 +69,7 @@ Ordenar ou segmentar sessões para análises e ações comerciais assistidas. A 
 ## Limitações e riscos
 
 - prevalência baixa da classe positiva;
-- threshold não escolhido por uma função de custo;
+- threshold de 0,5 ainda não escolhido por uma função de custo;
 - ausência de calibração e validação temporal;
 - possível mudança de distribuição entre a base histórica e o e-commerce real;
 - disponibilidade de `PageValues` no momento da decisão precisa ser confirmada;
@@ -54,5 +77,9 @@ Ordenar ou segmentar sessões para análises e ações comerciais assistidas. A 
 
 ## Governança
 
-Parâmetros e métricas são rastreados no MLflow. O campeão é registrado com assinatura e exemplo de entrada, recebe alias `champion` e pode ser substituído sem alterar consumidores que usem o alias. Dados, código, parâmetros e outputs do pipeline são relacionados por Git, `params.yaml`, `dvc.yaml` e `dvc.lock`.
+Parâmetros e métricas são rastreados no MLflow. Antes da promoção, um quality gate exige que
+as métricas obrigatórias atinjam o mínimo configurado em `params.yaml`. O campeão é registrado
+com assinatura e exemplo de entrada, recebe alias `champion` e pode ser substituído sem alterar
+consumidores que usem o alias. Dados, código, parâmetros e outputs do pipeline são relacionados
+por Git, `params.yaml`, `dvc.yaml` e `dvc.lock`.
 
