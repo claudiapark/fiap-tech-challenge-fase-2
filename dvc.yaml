@@ -61,7 +61,6 @@ stages:
       - split.random_state
       - training.cv_folds
       - training.primary_metric
-      - evaluation.threshold
       - quality_gate.minimum_metric_score
       - mlflow.tracking_uri
       - mlflow.experiment_name

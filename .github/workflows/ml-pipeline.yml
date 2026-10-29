@@ -1,0 +1,56 @@
+name: ML Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ml-pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reproduce:
+    name: Reproduce DVC pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python and uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --locked --all-groups
+
+      - name: Show DVC pipeline graph
+        run: uv run dvc dag
+
+      - name: Reproduce data preparation, training and model registration
+        run: uv run dvc repro
+
+      - name: Show DVC metrics
+        if: always()
+        run: uv run dvc metrics show
+
+      - name: Upload model, metrics and MLflow tracking data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: purchase-propensity-ml-artifacts-${{ github.run_number }}
+          path: |
+            models/purchase_propensity.joblib
+            reports/metrics.json
+            mlflow.db
+            mlruns/
+          if-no-files-found: warn
+          retention-days: 14

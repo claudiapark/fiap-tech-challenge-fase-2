@@ -121,19 +121,6 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
     result = fitted_result(sample_dataset)
     monkeypatch.setattr(train, "configure_mlflow", lambda *_: None)
     monkeypatch.setattr(train, "evaluate_candidate", lambda *_: result)
-    monkeypatch.setattr(
-        train,
-        "evaluate_holdout",
-        lambda *_: {
-            "test_accuracy": 0.8,
-            "test_precision": 0.7,
-            "test_recall": 0.7,
-            "test_f1": 0.7,
-            "test_roc_auc": 0.8,
-            "test_pr_auc": 0.7,
-            "test_decision_threshold": 0.5,
-        },
-    )
     monkeypatch.setattr(train, "log_champion_metrics", lambda *_: None)
     monkeypatch.setattr(train, "register_champion", lambda *_: "2")
     captured: list[object] = []
