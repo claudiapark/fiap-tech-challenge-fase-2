@@ -12,6 +12,18 @@
       "cv_roc_auc_mean": 0.9044120562492008,
       "cv_roc_auc_std": 0.00649615152314887
     },
+    "mlp_classifier": {
+      "cv_f1_mean": 0.6356784475153835,
+      "cv_f1_std": 0.03216037690802614,
+      "cv_pr_auc_mean": 0.7083174401998708,
+      "cv_pr_auc_std": 0.03131820429085568,
+      "cv_precision_mean": 0.7115362354682724,
+      "cv_precision_std": 0.027011414947579086,
+      "cv_recall_mean": 0.5753605485910211,
+      "cv_recall_std": 0.0402359212927608,
+      "cv_roc_auc_mean": 0.9161294469193317,
+      "cv_roc_auc_std": 0.007318304792654844
+    },
     "random_forest": {
       "cv_f1_mean": 0.6691310288986893,
       "cv_f1_std": 0.01644345640154078,

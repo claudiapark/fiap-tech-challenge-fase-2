@@ -2,9 +2,11 @@
 
 ## Experimentos
 
-O pipeline registra uma run para cada candidato no experimento `purchase-propensity`. As runs
-armazenam o nome e os hiperparâmetros do modelo, as médias e desvios da validação cruzada e,
-somente para o campeão, as métricas do holdout e o threshold de decisão.
+O pipeline registra uma run para cada candidato (`logistic_regression`, `random_forest` e
+`mlp_classifier`) no experimento `purchase-propensity`. As runs armazenam o nome e os
+hiperparâmetros do modelo, as médias e desvios da validação cruzada e, somente para o campeão,
+as métricas do holdout e o threshold de decisão. A comparação tabular também é exportada em
+`reports/model_comparison.csv`.
 
 ![Runs de treinamento no experimento purchase-propensity](images/mlflow-experiments.png)
 

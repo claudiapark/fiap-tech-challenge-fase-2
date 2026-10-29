@@ -9,6 +9,11 @@ from purchase_propensity.modeling.metrics import classification_metrics, summari
 from purchase_propensity.schema import FEATURE_COLUMNS, TARGET_COLUMN
 
 
+def test_candidates_include_linear_ensemble_and_mlp() -> None:
+    names = [candidate.name for candidate in build_candidates(random_state=42)]
+    assert names == ["logistic_regression", "random_forest", "mlp_classifier"]
+
+
 def test_candidates_support_probability_predictions(sample_dataset: pd.DataFrame) -> None:
     features = sample_dataset[FEATURE_COLUMNS]
     target = sample_dataset[TARGET_COLUMN].astype(int)

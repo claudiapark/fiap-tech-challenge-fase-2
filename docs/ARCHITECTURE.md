@@ -19,7 +19,7 @@ Somente cerca de 15,5% das sessões terminam em compra. A PR-AUC enfatiza a qual
 
 ### Holdout isolado
 
-Regressão Logística e Random Forest são comparadas por validação cruzada estratificada de cinco folds somente no treino. O teste é consultado uma vez, após a escolha do campeão.
+Regressão Logística, Random Forest e MLPClassifier são comparadas por validação cruzada estratificada de cinco folds somente no treino. O teste é consultado uma vez, após a escolha do campeão. A tabela comparativa é exportada em `reports/model_comparison.csv`.
 
 ### Duplicidades aparentes
 

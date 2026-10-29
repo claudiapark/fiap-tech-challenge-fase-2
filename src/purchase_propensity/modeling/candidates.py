@@ -8,6 +8,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -43,7 +44,7 @@ def build_pipeline(classifier: BaseEstimator) -> Pipeline:
 
 
 def build_candidates(random_state: int) -> list[ModelCandidate]:
-    """Return simple, reproducible model candidates."""
+    """Return Linear, ensemble and MLP candidates for fair comparison."""
     logistic_params = {"C": 1.0, "class_weight": "balanced", "max_iter": 1000}
     forest_params = {
         "n_estimators": 300,
@@ -51,6 +52,21 @@ def build_candidates(random_state: int) -> list[ModelCandidate]:
         "min_samples_leaf": 3,
         "class_weight": "balanced",
     }
+    mlp_hidden_layers = (64, 32)
+    mlp_params = {
+        "hidden_layer_sizes": mlp_hidden_layers,
+        "activation": "relu",
+        "solver": "adam",
+        "alpha": 1e-4,
+        "batch_size": 64,
+        "learning_rate_init": 0.001,
+        "max_iter": 300,
+        "early_stopping": True,
+        "validation_fraction": 0.1,
+        "n_iter_no_change": 15,
+    }
+    # Keep logged params JSON/MLflow-friendly (tuple -> string).
+    mlp_logged_params = {**mlp_params, "hidden_layer_sizes": str(mlp_hidden_layers)}
     return [
         ModelCandidate(
             "logistic_regression",
@@ -63,5 +79,10 @@ def build_candidates(random_state: int) -> list[ModelCandidate]:
                 RandomForestClassifier(random_state=random_state, n_jobs=-1, **forest_params)
             ),
             forest_params,
+        ),
+        ModelCandidate(
+            "mlp_classifier",
+            build_pipeline(MLPClassifier(random_state=random_state, **mlp_params)),
+            mlp_logged_params,
         ),
     ]

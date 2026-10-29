@@ -4,8 +4,9 @@
 
 - **Problema:** classificação binária de sessões de e-commerce;
 - **Alvo:** `Revenue`;
+- **Candidatos:** Regressão Logística, Random Forest e MLPClassifier;
 - **Campeão:** Random Forest;
-- **Critério de seleção:** média da PR-AUC em validação cruzada;
+- **Critério de seleção:** média da PR-AUC em validação cruzada (5 folds);
 - **Registry:** `purchase-propensity-classifier@champion`;
 - **Threshold avaliado:** 0,5.
 

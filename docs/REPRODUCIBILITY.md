@@ -38,16 +38,18 @@ O teste terminou com sucesso e produziu, a partir do zero:
 
 - dataset bruto obtido da UCI e validado pelo SHA-256 fixado em `params.yaml`;
 - divisões estratificadas de treino e teste;
-- comparação entre Regressão Logística e Random Forest;
+- comparação entre Regressão Logística, Random Forest e MLPClassifier;
 - modelo campeão em `models/purchase_propensity.joblib`;
 - métricas versionadas em `reports/metrics.json`;
+- tabela comparativa em `reports/model_comparison.csv`;
 - runs no experimento `purchase-propensity`;
 - modelo `purchase-propensity-classifier` registrado com o alias `champion`;
-- 26 testes aprovados e cobertura total de 80,53%.
+- testes aprovados com cobertura mínima de 80%.
 
-A Random Forest foi novamente selecionada por `cv_pr_auc_mean=0,7222`. No holdout, o
-resultado reproduzido foi `PR-AUC=0,7066`, `ROC-AUC=0,9190`, `recall=0,8037` e `F1=0,6463`.
-Os números completos e hashes dos outputs permanecem em `reports/metrics.json` e `dvc.lock`.
+A Random Forest foi novamente selecionada por `cv_pr_auc_mean=0,7222` (MLP 0,7083;
+Regressão Logística 0,6571). No holdout, o resultado reproduzido foi `PR-AUC=0,7066`,
+`ROC-AUC=0,9190`, `recall=0,8037` e `F1=0,6463`. Os números completos e hashes dos
+outputs permanecem em `reports/metrics.json`, `reports/model_comparison.csv` e `dvc.lock`.
 
 ## Escopo da garantia
 
