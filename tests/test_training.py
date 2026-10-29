@@ -63,9 +63,7 @@ def test_load_select_evaluate_and_save(tmp_path: Path, sample_dataset: pd.DataFr
     model_path = tmp_path / "models" / "model.joblib"
     report_path = tmp_path / "reports" / "metrics.json"
     comparison_path = tmp_path / "reports" / "model_comparison.csv"
-    train.save_outputs(
-        champion.model, report, comparison, model_path, report_path, comparison_path
-    )
+    train.save_outputs(champion.model, report, comparison, model_path, report_path, comparison_path)
     assert champion.name == "stronger"
     assert joblib.load(model_path).predict(features.head(1)).shape == (1,)
     assert '"champion"' in report_path.read_text()

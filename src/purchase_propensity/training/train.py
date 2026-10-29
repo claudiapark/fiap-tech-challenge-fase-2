@@ -150,9 +150,7 @@ def build_report(
     }
 
 
-def build_comparison_table(
-    results: list[CandidateResult], champion_name: str
-) -> pd.DataFrame:
+def build_comparison_table(results: list[CandidateResult], champion_name: str) -> pd.DataFrame:
     """Build a spreadsheet-friendly comparison of cross-validated candidates."""
     rows = []
     for result in results:
