@@ -24,10 +24,15 @@ def fitted_result(sample_dataset: pd.DataFrame, name: str = "candidate") -> Cand
 
     metrics = {
         "cv_pr_auc_mean": 0.70,
+        "cv_pr_auc_std": 0.02,
         "cv_precision_mean": 0.70,
+        "cv_precision_std": 0.02,
         "cv_recall_mean": 0.70,
+        "cv_recall_std": 0.02,
         "cv_f1_mean": 0.70,
+        "cv_f1_std": 0.02,
         "cv_roc_auc_mean": 0.70,
+        "cv_roc_auc_std": 0.02,
     }
 
     return CandidateResult(
@@ -44,18 +49,29 @@ def test_load_select_evaluate_and_save(tmp_path: Path, sample_dataset: pd.DataFr
     sample_dataset.to_csv(source, index=False)
     features, target = train.load_split(source)
     weaker = fitted_result(sample_dataset, "weaker")
+    stronger_metrics = {
+        **weaker.metrics,
+        "cv_pr_auc_mean": 0.8,
+    }
     stronger = CandidateResult(
-        "stronger", weaker.model, {"cv_pr_auc_mean": 0.8}, "run-2", "runs:/run-2/model"
+        "stronger", weaker.model, stronger_metrics, "run-2", "runs:/run-2/model"
     )
     champion = train.select_champion([weaker, stronger], "cv_pr_auc_mean")
     metrics = train.evaluate_holdout(champion, features, target)
     report = train.build_report([weaker, stronger], champion, metrics, target, target)
+    comparison = train.build_comparison_table([weaker, stronger], champion.name)
     model_path = tmp_path / "models" / "model.joblib"
     report_path = tmp_path / "reports" / "metrics.json"
-    train.save_outputs(champion.model, report, model_path, report_path)
+    comparison_path = tmp_path / "reports" / "model_comparison.csv"
+    train.save_outputs(
+        champion.model, report, comparison, model_path, report_path, comparison_path
+    )
     assert champion.name == "stronger"
     assert joblib.load(model_path).predict(features.head(1)).shape == (1,)
     assert '"champion"' in report_path.read_text()
+    assert comparison.iloc[0]["model"] == "stronger"
+    assert comparison.iloc[0]["selected_champion"]
+    assert "cv_pr_auc_mean" in comparison_path.read_text()
 
 
 def test_unknown_primary_metric_raises(sample_dataset: pd.DataFrame) -> None:
@@ -143,6 +159,7 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
         test=test_path,
         model_output=tmp_path / "model.joblib",
         metrics_output=tmp_path / "metrics.json",
+        comparison_output=tmp_path / "model_comparison.csv",
         random_state=42,
         cv_folds=2,
         primary_metric="cv_pr_auc_mean",

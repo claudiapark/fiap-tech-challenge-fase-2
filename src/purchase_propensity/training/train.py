@@ -150,14 +150,47 @@ def build_report(
     }
 
 
+def build_comparison_table(
+    results: list[CandidateResult], champion_name: str
+) -> pd.DataFrame:
+    """Build a spreadsheet-friendly comparison of cross-validated candidates."""
+    rows = []
+    for result in results:
+        rows.append(
+            {
+                "model": result.name,
+                "selected_champion": result.name == champion_name,
+                "cv_pr_auc_mean": result.metrics["cv_pr_auc_mean"],
+                "cv_pr_auc_std": result.metrics["cv_pr_auc_std"],
+                "cv_roc_auc_mean": result.metrics["cv_roc_auc_mean"],
+                "cv_roc_auc_std": result.metrics["cv_roc_auc_std"],
+                "cv_precision_mean": result.metrics["cv_precision_mean"],
+                "cv_precision_std": result.metrics["cv_precision_std"],
+                "cv_recall_mean": result.metrics["cv_recall_mean"],
+                "cv_recall_std": result.metrics["cv_recall_std"],
+                "cv_f1_mean": result.metrics["cv_f1_mean"],
+                "cv_f1_std": result.metrics["cv_f1_std"],
+            }
+        )
+    table = pd.DataFrame(rows)
+    return table.sort_values("cv_pr_auc_mean", ascending=False).reset_index(drop=True)
+
+
 def save_outputs(
-    model: Pipeline, report: dict[str, Any], model_path: Path, report_path: Path
+    model: Pipeline,
+    report: dict[str, Any],
+    comparison: pd.DataFrame,
+    model_path: Path,
+    report_path: Path,
+    comparison_path: Path,
 ) -> None:
-    """Persist the champion model and final metrics."""
+    """Persist the champion model, metrics report and comparison table."""
     model_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.parent.mkdir(parents=True, exist_ok=True)
+    comparison_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, model_path)
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    comparison.to_csv(comparison_path, index=False)
 
 
 def run_training(args: argparse.Namespace) -> dict[str, Any]:
@@ -189,13 +222,16 @@ def run_training(args: argparse.Namespace) -> dict[str, Any]:
         train_target,
         test_target,
     )
+    comparison = build_comparison_table(results, champion.name)
 
     # Salva as métricas para auditoria mesmo se o gate reprovar o modelo.
     save_outputs(
         champion.model,
         report,
+        comparison,
         args.model_output,
         args.metrics_output,
+        args.comparison_output,
     )
 
     # O bloqueio ocorre antes de promover o modelo no MLflow.
@@ -230,6 +266,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--test", required=True, type=Path)
     parser.add_argument("--model-output", required=True, type=Path)
     parser.add_argument("--metrics-output", required=True, type=Path)
+    parser.add_argument("--comparison-output", required=True, type=Path)
     parser.add_argument("--random-state", required=True, type=int)
     parser.add_argument("--cv-folds", required=True, type=int)
     parser.add_argument("--primary-metric", default="cv_pr_auc_mean")

@@ -85,10 +85,11 @@ uv run dvc metrics show
 **Falar:**
 
 > O pré-processamento permanece dentro das pipelines do Scikit-Learn para evitar
-> vazamento de dados. Comparamos Regressão Logística e Random Forest usando cinco
-> folds estratificados. Como a classe positiva é minoritária, escolhemos PR-AUC como
-> métrica principal. A Regressão Logística obteve 0,6571 e a Random Forest 0,7222.
-> O conjunto de teste ficou isolado até a seleção do campeão.
+> vazamento de dados. Comparamos Regressão Logística, Random Forest e MLPClassifier
+> usando cinco folds estratificados. Como a classe positiva é minoritária, escolhemos
+> PR-AUC como métrica principal. A Random Forest venceu com 0,7222, seguida do MLP
+> com 0,7083 e da Regressão Logística com 0,6571. O conjunto de teste ficou isolado
+> até a seleção do campeão.
 
 ### 2:35-3:25 - Action: MLflow Tracking e Registry
 

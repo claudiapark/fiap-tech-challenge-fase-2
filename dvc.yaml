@@ -39,6 +39,7 @@ stages:
       --test data/processed/test.csv
       --model-output models/purchase_propensity.joblib
       --metrics-output reports/metrics.json
+      --comparison-output reports/model_comparison.csv
       --random-state ${split.random_state}
       --cv-folds ${training.cv_folds}
       --primary-metric ${training.primary_metric}
@@ -69,6 +70,8 @@ stages:
       - mlflow.model_alias
     outs:
       - models/purchase_propensity.joblib
+      - reports/model_comparison.csv:
+          cache: false
     metrics:
       - reports/metrics.json:
           cache: false

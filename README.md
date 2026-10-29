@@ -36,12 +36,15 @@ O DVC coordena `download -> prepare -> train`. As transformações ficam dentro 
 
 ## Resultados
 
-A classe positiva é minoritária; por isso, **PR-AUC de validação cruzada** foi definida como critério de seleção. O teste permaneceu isolado até a escolha do campeão.
+A classe positiva é minoritária; por isso, **PR-AUC de validação cruzada** foi definida como critério de seleção. Os candidatos Linear (Regressão Logística), Ensemble (Random Forest) e Rede Neural (`MLPClassifier`) são comparados com 5 folds estratificados. O teste permanece isolado até a escolha do campeão.
 
-| Modelo | CV PR-AUC | CV ROC-AUC | CV Recall | CV F1 |
-|---|---:|---:|---:|---:|
-| Regressão Logística | 0,6571 | 0,9044 | 0,7647 | 0,6169 |
-| **Random Forest** | **0,7222** | **0,9275** | **0,8329** | **0,6691** |
+| Modelo | CV PR-AUC | CV ROC-AUC | CV Precision | CV Recall | CV F1 |
+|---|---:|---:|---:|---:|---:|
+| **Random Forest** | **0,7222** | **0,9275** | **0,5597** | **0,8329** | **0,6691** |
+| MLP Classifier | 0,7083 | 0,9161 | 0,7115 | 0,5754 | 0,6357 |
+| Regressão Logística | 0,6571 | 0,9044 | 0,5173 | 0,7647 | 0,6169 |
+
+A tabela completa (média e desvio) está em [`reports/model_comparison.csv`](reports/model_comparison.csv). O modelo campeão é salvo em `models/purchase_propensity.joblib`.
 
 Métricas finais da Random Forest no holdout:
 
@@ -77,7 +80,9 @@ A Random Forest é registrada como `purchase-propensity-classifier` e recebe o a
 │   ├── REPRODUCIBILITY.md
 │   └── VIDEO_STAR.md
 ├── models/
-├── reports/metrics.json
+├── reports/
+│   ├── metrics.json
+│   └── model_comparison.csv
 ├── src/purchase_propensity/
 │   ├── data/
 │   ├── modeling/
