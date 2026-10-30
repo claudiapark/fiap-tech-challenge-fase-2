@@ -19,6 +19,11 @@ Na execução validada em 27/10/2026, a run campeã registrou:
 - `decision_threshold=0,5`;
 - tag `stage=champion`.
 
+Após a ampliação da comparação, o experimento passou a registrar três candidatos. O
+`MLPClassifier` obteve `cv_pr_auc_mean=0,7083`, ficando entre a Random Forest (`0,7222`) e a
+Regressão Logística (`0,6571`). A seleção continua sendo feita somente pela PR-AUC média da
+validação cruzada, antes de consultar o holdout.
+
 ## Model Registry
 
 O artefato selecionado é registrado como `purchase-propensity-classifier`. A versão validada

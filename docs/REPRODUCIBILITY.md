@@ -19,7 +19,7 @@ as métricas por meio do DVC.
 Comandos executados:
 
 ```bash
-git clone --branch evidencias-reproducibilidade-modelo \
+git clone --branch main \
   https://github.com/claudiapark/fiap-tech-challenge-fase-2.git
 cd fiap-tech-challenge-fase-2
 uv sync --locked
@@ -44,12 +44,18 @@ O teste terminou com sucesso e produziu, a partir do zero:
 - tabela comparativa em `reports/model_comparison.csv`;
 - runs no experimento `purchase-propensity`;
 - modelo `purchase-propensity-classifier` registrado com o alias `champion`;
-- testes aprovados com cobertura mínima de 80%.
+- 27 testes aprovados com cobertura total de 81,07% na validação Linux da CI.
 
 A Random Forest foi novamente selecionada por `cv_pr_auc_mean=0,7222` (MLP 0,7083;
 Regressão Logística 0,6571). No holdout, o resultado reproduzido foi `PR-AUC=0,7066`,
 `ROC-AUC=0,9190`, `recall=0,8037` e `F1=0,6463`. Os números completos e hashes dos
 outputs permanecem em `reports/metrics.json`, `reports/model_comparison.csv` e `dvc.lock`.
+
+Após a inclusão do `MLPClassifier`, o fluxo completo também foi executado em ambiente Linux
+limpo pelo GitHub Actions em 29/10/2026. A execução instalou o `uv.lock`, reproduziu todos os
+estágios do DVC, aprovou o quality gate, construiu a imagem Docker, iniciou o contêiner e
+validou o endpoint `/health`. A evidência está na
+[execução 40806409911](https://github.com/claudiapark/fiap-tech-challenge-fase-2/actions/runs/40806409911).
 
 ## Escopo da garantia
 
