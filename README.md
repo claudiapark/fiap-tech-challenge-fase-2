@@ -162,7 +162,7 @@ uv run ruff check .
 uv run pytest
 ```
 
-A CI verifica sintaxe, formatação, lint, 26 testes com cobertura mínima de 80%, `dvc repro`,
+A CI verifica sintaxe, formatação, lint, 27 testes com cobertura mínima de 80%, `dvc repro`,
 quality gate do modelo, build do Docker e um smoke test do contêiner em pushes e pull
 requests. Execuções concorrentes da mesma branch são canceladas para economizar tempo de CI.
 
@@ -221,6 +221,16 @@ com comandos, telas e divisão por tempo, está em [`docs/VIDEO_STAR.md`](docs/V
 As contribuições devem ser feitas em branches individuais e integradas por Pull
 Request, mantendo no histórico a responsabilidade real de cada integrante.
 
+### Contribuições técnicas verificáveis
+
+| Integrante | Contribuições incorporadas |
+|---|---|
+| Claudia Park | Pipeline MLOps, DVC/MLflow, avaliação, documentação, testes e quality gate |
+| Leonardo Oliveira | Automação da CI, visualização do DAG do DVC e publicação de artefatos do pipeline |
+| Lucas Balduino | Fixação da versão do `uv` no Docker, inclusão do MLPClassifier e comparação dos modelos |
+
+O histórico de commits e Pull Requests mantém a autoria original dessas alterações.
+
 ## Checklist de entrega
 
 - [x] ambiente reproduzível com `uv` e lock file;
@@ -231,6 +241,6 @@ Request, mantendo no histórico a responsabilidade real de cada integrante.
 - [x] quality gate antes da promoção do modelo;
 - [x] README, arquitetura e Model Card;
 - [x] reprodução validada em clone limpo e evidências do MLflow;
-- [ ] contribuições reais dos integrantes registradas por Pull Requests;
+- [x] contribuições técnicas verificáveis registradas por commits e Pull Requests;
 - [ ] vídeo STAR publicado e link adicionado acima;
 - [ ] link do repositório e do vídeo enviados na plataforma da FIAP.

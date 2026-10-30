@@ -122,7 +122,7 @@ docker inspect --format='{{.State.Health.Status}}' purchase-propensity-demo
 
 > O Docker empacota o ambiente, reproduz o pipeline e inicia o servidor MLflow. O
 > health check confirma que o serviço está respondendo. Na integração contínua,
-> validamos formatação, lint, 20 testes, cobertura mínima de 80%, reprodução do DVC,
+> validamos formatação, lint, 27 testes, cobertura de 81,07%, reprodução do DVC,
 > construção da imagem e inicialização real do contêiner.
 
 ### 4:05-4:40 - Result
@@ -145,19 +145,22 @@ docker inspect --format='{{.State.Health.Status}}' purchase-propensity-demo
 > probabilidades não foram calibradas e não há validação temporal. O deploy em nuvem
 > é opcional e ficou fora do escopo. Obrigado.
 
-## 3. Divisão sugerida entre integrantes
+## 3. Apresentação definida
 
-Se todos participarem do vídeo, uma divisão possível é:
+A gravação pode ser apresentada integralmente por **Claudia Park**, mantendo o projeto como
+trabalho em grupo e citando as contribuições técnicas registradas no GitHub. A divisão para a
+apresentação solo é:
 
-| Parte | Responsável |
+| Tempo | Parte |
 |---|---|
-| Situation e Task | integrante 1 |
-| Arquitetura e DVC | integrante 2 |
-| Modelagem e MLflow | integrante 3 |
-| Docker, CI e resultados | integrante 4 |
-| Limitações e fechamento | integrante 5 |
+| 0:00-0:55 | Situation e Task |
+| 0:55-2:20 | Arquitetura, DVC e reprodutibilidade |
+| 2:20-3:35 | Comparação dos modelos, MLflow e Model Registry |
+| 3:35-4:40 | Docker, CI e resultados |
+| 4:40-4:58 | Limitações e fechamento |
 
-Substituam `integrante 1` a `integrante 5` pelos nomes reais antes da gravação.
+Não é necessário que todos os integrantes apareçam no vídeo; a autoria técnica permanece
+demonstrada pelos commits e Pull Requests do repositório.
 
 ## 4. Depois de gravar
 

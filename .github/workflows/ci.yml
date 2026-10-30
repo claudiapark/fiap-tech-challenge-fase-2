@@ -45,6 +45,15 @@ jobs:
       - name: Run tests and coverage
         run: uv run pytest
 
+      - name: Display DVC pipeline DAG
+        run: uv run dvc dag
+
+      - name: Generate DVC DAG artifact
+        if: always()
+        run: |
+          mkdir -p reports
+          uv run dvc dag --dot > reports/dvc-dag.dot
+
       - name: Train model and enforce quality gate
         run: uv run dvc repro
 
@@ -56,6 +65,18 @@ jobs:
 
       - name: Display model metrics
         run: uv run dvc metrics show
+
+      - name: Publish pipeline artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-pipeline-artifacts
+          path: |
+            reports/
+            dvc.lock
+            dvc.yaml
+          if-no-files-found: warn
+          retention-days: 7
 
   docker-build:
     name: Build Docker Image
