@@ -29,6 +29,7 @@ class FakeClient:
 
 
 def test_register_champion_sets_alias_and_tags(monkeypatch) -> None:
+    # Substitui o cliente real para verificar as operações sem backend MLflow.
     client = FakeClient()
     monkeypatch.setattr(registry.mlflow, "register_model", lambda **_: FakeVersion())
     monkeypatch.setattr(registry, "MlflowClient", lambda: client)

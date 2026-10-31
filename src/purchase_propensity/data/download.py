@@ -20,6 +20,7 @@ def fetch_archive(url: str, timeout: int = 60) -> bytes:
 def extract_dataset(archive: bytes) -> bytes:
     """Extract the expected CSV from a ZIP archive."""
     with ZipFile(BytesIO(archive)) as zipped:
+        # Aceita o arquivo apenas quando o ZIP contém uma única correspondência.
         matches = [name for name in zipped.namelist() if name.endswith(CSV_SUFFIX)]
         if len(matches) != 1:
             raise ValueError(f"Expected one dataset CSV, found {len(matches)}")
@@ -36,6 +37,7 @@ def verify_checksum(content: bytes, expected_sha256: str) -> None:
 def download_dataset(url: str, expected_sha256: str, output_path: Path) -> None:
     """Download, validate, and persist the source dataset."""
     dataset = extract_dataset(fetch_archive(url))
+    # Valida o conteúdo antes de gravá-lo no caminho de saída.
     verify_checksum(dataset, expected_sha256)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_bytes(dataset)

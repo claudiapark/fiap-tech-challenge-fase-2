@@ -14,6 +14,7 @@ from purchase_propensity.schema import TARGET_COLUMN
 
 
 def test_split_is_stratified_and_reproducible(sample_dataset: pd.DataFrame) -> None:
+    # Repetir a divisão confirma o determinismo e a estratificação do alvo.
     first_train, first_test = split_dataset(sample_dataset, test_size=0.2, random_state=42)
     second_train, second_test = split_dataset(sample_dataset, test_size=0.2, random_state=42)
     assert first_train.index.tolist() == second_train.index.tolist()

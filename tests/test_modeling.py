@@ -14,6 +14,7 @@ def test_candidates_support_probability_predictions(sample_dataset: pd.DataFrame
     target = sample_dataset[TARGET_COLUMN].astype(int)
     for candidate in build_candidates(random_state=42):
         candidate.estimator.fit(features, target)
+        # A saída deve conter probabilidades válidas para a classe positiva.
         probabilities = candidate.estimator.predict_proba(features.head(3))[:, 1]
         assert probabilities.shape == (3,)
         assert np.all((probabilities >= 0) & (probabilities <= 1))

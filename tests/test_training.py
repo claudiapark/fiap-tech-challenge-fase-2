@@ -26,6 +26,7 @@ def test_load_select_evaluate_and_save(tmp_path: Path, sample_dataset: pd.DataFr
     sample_dataset.to_csv(source, index=False)
     features, target = train.load_split(source)
     weaker = fitted_result(sample_dataset, "weaker")
+    # Garante que a seleção prioriza a métrica de validação mais alta.
     stronger = CandidateResult(
         "stronger", weaker.model, {"cv_pr_auc_mean": 0.8}, "run-2", "runs:/run-2/model"
     )
@@ -87,6 +88,7 @@ def test_run_training_orchestrates_dependencies(tmp_path, sample_dataset, monkey
     sample_dataset.to_csv(train_path, index=False)
     sample_dataset.to_csv(test_path, index=False)
     result = fitted_result(sample_dataset)
+    # Isola a orquestração dos serviços externos e do treinamento completo.
     monkeypatch.setattr(train, "configure_mlflow", lambda *_: None)
     monkeypatch.setattr(train, "evaluate_candidate", lambda *_: result)
     monkeypatch.setattr(train, "evaluate_holdout", lambda *_: {"test_pr_auc": 0.7})

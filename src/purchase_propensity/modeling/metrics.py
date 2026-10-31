@@ -25,6 +25,7 @@ CV_SCORING = {
 def summarize_cross_validation(results: Mapping[str, NDArray[np.float64]]) -> dict[str, float]:
     """Summarize cross-validation scores as mean and standard deviation."""
     summary: dict[str, float] = {}
+    # Cada métrica contém uma pontuação por fold, resumida por média e desvio padrão.
     for metric in CV_SCORING:
         scores = results[f"test_{metric}"]
         summary[f"cv_{metric}_mean"] = float(np.mean(scores))

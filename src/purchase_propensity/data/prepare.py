@@ -11,6 +11,7 @@ from purchase_propensity.schema import EXPECTED_COLUMNS, TARGET_COLUMN
 
 def validate_dataset(dataset: pd.DataFrame) -> None:
     """Validate required columns and basic dataset integrity."""
+    # Ordena as ausências para manter a mensagem de erro determinística.
     missing_columns = sorted(set(EXPECTED_COLUMNS) - set(dataset.columns))
     if missing_columns:
         raise ValueError(f"Missing required columns: {missing_columns}")
@@ -22,6 +23,7 @@ def validate_dataset(dataset: pd.DataFrame) -> None:
 
 def normalize_target(target: pd.Series) -> pd.Series:
     """Convert the Revenue target to integer labels."""
+    # Normaliza rótulos textuais e numéricos para a mesma representação binária.
     normalized = target.astype(str).str.upper().map({"TRUE": 1, "FALSE": 0, "1": 1, "0": 0})
     if normalized.isna().any():
         raise ValueError("Revenue contains unsupported labels")
@@ -38,6 +40,7 @@ def split_dataset(
         prepared,
         test_size=test_size,
         random_state=random_state,
+        # Preserva a proporção de compras nos conjuntos de treino e teste.
         stratify=prepared[TARGET_COLUMN],
     )
 

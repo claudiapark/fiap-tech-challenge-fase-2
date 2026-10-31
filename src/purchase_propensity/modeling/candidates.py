@@ -25,6 +25,7 @@ class ModelCandidate:
 
 def build_preprocessor() -> ColumnTransformer:
     """Create leakage-safe numeric and categorical transformations."""
+    # O pré-processamento dentro da pipeline é ajustado novamente em cada fold.
     numeric = Pipeline([("imputer", SimpleImputer(strategy="median")), ("scale", StandardScaler())])
     categorical = Pipeline(
         [

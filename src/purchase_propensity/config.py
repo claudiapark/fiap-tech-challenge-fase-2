@@ -21,6 +21,7 @@ class Settings:
     @classmethod
     def from_env(cls, project_root: Path = PROJECT_ROOT) -> "Settings":
         """Load settings from a local .env file and environment variables."""
+        # O arquivo local complementa as variáveis já definidas no ambiente.
         load_dotenv(project_root / ".env")
         return cls(
             tracking_uri=os.getenv("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db"),

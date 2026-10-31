@@ -9,6 +9,7 @@ from purchase_propensity.schema import CATEGORICAL_FEATURES, NUMERIC_FEATURES, T
 @pytest.fixture
 def sample_dataset() -> pd.DataFrame:
     """Build a deterministic dataset with the production schema."""
+    # Dados sintéticos mantêm os testes independentes do arquivo real do projeto.
     rows = 80
     data: dict[str, list[object]] = {}
     for index, column in enumerate(NUMERIC_FEATURES, start=1):

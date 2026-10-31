@@ -6,6 +6,7 @@ from purchase_propensity.config import Settings
 
 
 def test_settings_have_safe_local_defaults(tmp_path: Path, monkeypatch) -> None:
+    # Remove valores da máquina para validar somente os padrões locais.
     for variable in (
         "MLFLOW_TRACKING_URI",
         "MLFLOW_EXPERIMENT_NAME",
