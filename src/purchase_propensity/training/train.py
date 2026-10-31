@@ -3,6 +3,7 @@
 import argparse
 import json
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from typing import Any
 
@@ -87,6 +88,7 @@ def evaluate_candidate(
         cv=cross_validator,
         scoring=CV_SCORING,
         n_jobs=-1,
+        error_score="raise",
     )
     metrics = summarize_cross_validation(scores)
     # Depois da validação, ajusta o modelo final em todos os dados de treino.
@@ -97,8 +99,12 @@ def evaluate_candidate(
 
 def select_champion(results: list[CandidateResult], primary_metric: str) -> CandidateResult:
     """Select the candidate with the highest validation metric."""
+    if not results:
+        raise ValueError("No candidate results to select from")
     if any(primary_metric not in result.metrics for result in results):
         raise ValueError(f"Unknown primary metric: {primary_metric}")
+    if any(not isfinite(result.metrics[primary_metric]) for result in results):
+        raise ValueError(f"Non-finite values found for primary metric: {primary_metric}")
     return max(results, key=lambda result: result.metrics[primary_metric])
 
 

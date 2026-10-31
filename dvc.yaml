@@ -6,7 +6,9 @@ stages:
       --sha256 ${data.sha256}
       --output data/raw/online_shoppers_intention.csv
     deps:
+      - pyproject.toml
       - src/purchase_propensity/data/download.py
+      - uv.lock
     params:
       - data.url
       - data.sha256
@@ -23,8 +25,10 @@ stages:
       --random-state ${split.random_state}
     deps:
       - data/raw/online_shoppers_intention.csv
+      - pyproject.toml
       - src/purchase_propensity/data/prepare.py
       - src/purchase_propensity/schema.py
+      - uv.lock
     params:
       - split.test_size
       - split.random_state
@@ -49,11 +53,13 @@ stages:
     deps:
       - data/processed/train.csv
       - data/processed/test.csv
+      - pyproject.toml
       - src/purchase_propensity/modeling/candidates.py
       - src/purchase_propensity/modeling/metrics.py
       - src/purchase_propensity/modeling/registry.py
       - src/purchase_propensity/schema.py
       - src/purchase_propensity/training/train.py
+      - uv.lock
     params:
       - split.random_state
       - training.cv_folds

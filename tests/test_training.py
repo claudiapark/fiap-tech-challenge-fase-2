@@ -46,6 +46,27 @@ def test_unknown_primary_metric_raises(sample_dataset: pd.DataFrame) -> None:
         train.select_champion([fitted_result(sample_dataset)], "missing")
 
 
+@pytest.mark.parametrize("invalid_metric", [float("nan"), float("inf"), float("-inf")])
+def test_non_finite_primary_metric_raises(
+    sample_dataset: pd.DataFrame, invalid_metric: float
+) -> None:
+    result = fitted_result(sample_dataset)
+    invalid_result = CandidateResult(
+        result.name,
+        result.model,
+        {"cv_pr_auc_mean": invalid_metric},
+        result.run_id,
+        result.model_uri,
+    )
+    with pytest.raises(ValueError, match="Non-finite values"):
+        train.select_champion([invalid_result], "cv_pr_auc_mean")
+
+
+def test_empty_candidate_results_raise() -> None:
+    with pytest.raises(ValueError, match="No candidate results"):
+        train.select_champion([], "cv_pr_auc_mean")
+
+
 def test_evaluate_candidate_uses_cross_validation(sample_dataset, monkeypatch) -> None:
     monkeypatch.setattr(train, "log_candidate", lambda *_: ("run", "runs:/run/model"))
     candidate = build_candidates(42)[0]
@@ -57,6 +78,22 @@ def test_evaluate_candidate_uses_cross_validation(sample_dataset, monkeypatch) -
     )
     assert result.run_id == "run"
     assert "cv_pr_auc_mean" in result.metrics
+
+
+def test_evaluate_candidate_propagates_cross_validation_errors(sample_dataset, monkeypatch) -> None:
+    def fail_cross_validation(*args, **kwargs):
+        assert kwargs["error_score"] == "raise"
+        raise ValueError("invalid fold")
+
+    monkeypatch.setattr(train, "cross_validate", fail_cross_validation)
+    candidate = build_candidates(42)[0]
+    with pytest.raises(ValueError, match="invalid fold"):
+        train.evaluate_candidate(
+            candidate,
+            sample_dataset[FEATURE_COLUMNS],
+            sample_dataset[TARGET_COLUMN].astype(int),
+            StratifiedKFold(2, shuffle=True, random_state=42),
+        )
 
 
 def test_configure_and_log_champion(monkeypatch, sample_dataset) -> None:
