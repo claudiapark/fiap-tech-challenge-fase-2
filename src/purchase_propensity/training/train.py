@@ -56,6 +56,7 @@ def log_candidate(
     features: pd.DataFrame,
 ) -> tuple[str, str]:
     """Persist one comparable model experiment in MLflow."""
+    # Usa poucas linhas apenas para registrar a assinatura e um exemplo de entrada.
     predictions = model.predict(features.head(5))
     signature = infer_signature(features.head(5), predictions)
     with mlflow.start_run(run_name=candidate.name) as run:
@@ -89,6 +90,7 @@ def evaluate_candidate(
         n_jobs=-1,
     )
     metrics = summarize_cross_validation(scores)
+    # Depois da validação, ajusta o modelo final em todos os dados de treino.
     model.fit(features, target)
     run_id, model_uri = log_candidate(candidate, model, metrics, features)
     return CandidateResult(candidate.name, model, metrics, run_id, model_uri)
@@ -210,6 +212,7 @@ def run_training(args: argparse.Namespace) -> dict[str, Any]:
     ]
 
     champion = select_champion(results, args.primary_metric)
+    # O conjunto de teste só é consultado depois da escolha do campeão.
     test_metrics = evaluate_holdout(champion, test_features, test_target, args.threshold)
     log_champion_metrics(champion, test_metrics)
 

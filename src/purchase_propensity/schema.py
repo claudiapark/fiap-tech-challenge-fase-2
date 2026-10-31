@@ -26,4 +26,5 @@ CATEGORICAL_FEATURES = [
 ]
 
 FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+# Mantém o alvo após as features na ordem compartilhada entre preparação e treino.
 EXPECTED_COLUMNS = FEATURE_COLUMNS + [TARGET_COLUMN]
