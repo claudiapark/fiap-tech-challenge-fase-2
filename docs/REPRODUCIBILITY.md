@@ -44,7 +44,7 @@ O teste terminou com sucesso e produziu, a partir do zero:
 - tabela comparativa em `reports/model_comparison.csv`;
 - runs no experimento `purchase-propensity`;
 - modelo `purchase-propensity-classifier` registrado com o alias `champion`;
-- 27 testes aprovados com cobertura total de 81,07% na validação Linux da CI.
+- 32 testes aprovados com cobertura total de 81,37% na validação automatizada.
 
 A Random Forest foi novamente selecionada por `cv_pr_auc_mean=0,7222` (MLP 0,7083;
 Regressão Logística 0,6571). No holdout, o resultado reproduzido foi `PR-AUC=0,7066`,

@@ -14,6 +14,7 @@ from purchase_propensity.data.download import download_dataset, extract_dataset,
 
 def build_archive(content: bytes) -> bytes:
     """Create an in-memory archive matching the UCI filename."""
+    # Simula a resposta compactada sem depender de acesso à rede.
     buffer = BytesIO()
     with ZipFile(buffer, "w") as zipped:
         zipped.writestr("online_shoppers_intention.csv", content)

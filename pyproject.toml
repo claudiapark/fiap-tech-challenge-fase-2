@@ -33,6 +33,7 @@ packages = ["src/purchase_propensity"]
 
 [tool.pytest.ini_options]
 addopts = "-q --cov=purchase_propensity --cov-report=term-missing --cov-fail-under=80"
+pythonpath = ["src"]
 testpaths = ["tests"]
 
 [tool.ruff]

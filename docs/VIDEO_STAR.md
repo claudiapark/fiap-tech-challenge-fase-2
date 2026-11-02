@@ -122,7 +122,7 @@ docker inspect --format='{{.State.Health.Status}}' purchase-propensity-demo
 
 > O Docker empacota o ambiente, reproduz o pipeline e inicia o servidor MLflow. O
 > health check confirma que o serviço está respondendo. Na integração contínua,
-> validamos formatação, lint, 27 testes, cobertura de 81,07%, reprodução do DVC,
+> validamos formatação, lint, 32 testes, cobertura acima de 81%, reprodução do DVC,
 > construção da imagem e inicialização real do contêiner.
 
 ### 4:05-4:40 - Result

@@ -3,6 +3,7 @@
 import argparse
 import json
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from typing import Any
 
@@ -56,6 +57,7 @@ def log_candidate(
     features: pd.DataFrame,
 ) -> tuple[str, str]:
     """Persist one comparable model experiment in MLflow."""
+    # Usa poucas linhas apenas para registrar a assinatura e um exemplo de entrada.
     predictions = model.predict(features.head(5))
     signature = infer_signature(features.head(5), predictions)
     with mlflow.start_run(run_name=candidate.name) as run:
@@ -87,8 +89,10 @@ def evaluate_candidate(
         cv=cross_validator,
         scoring=CV_SCORING,
         n_jobs=-1,
+        error_score="raise",
     )
     metrics = summarize_cross_validation(scores)
+    # Depois da validação, ajusta o modelo final em todos os dados de treino.
     model.fit(features, target)
     run_id, model_uri = log_candidate(candidate, model, metrics, features)
     return CandidateResult(candidate.name, model, metrics, run_id, model_uri)
@@ -96,8 +100,12 @@ def evaluate_candidate(
 
 def select_champion(results: list[CandidateResult], primary_metric: str) -> CandidateResult:
     """Select the candidate with the highest validation metric."""
+    if not results:
+        raise ValueError("No candidate results to select from")
     if any(primary_metric not in result.metrics for result in results):
         raise ValueError(f"Unknown primary metric: {primary_metric}")
+    if any(not isfinite(result.metrics[primary_metric]) for result in results):
+        raise ValueError(f"Non-finite values found for primary metric: {primary_metric}")
     return max(results, key=lambda result: result.metrics[primary_metric])
 
 
@@ -210,6 +218,7 @@ def run_training(args: argparse.Namespace) -> dict[str, Any]:
     ]
 
     champion = select_champion(results, args.primary_metric)
+    # O conjunto de teste só é consultado depois da escolha do campeão.
     test_metrics = evaluate_holdout(champion, test_features, test_target, args.threshold)
     log_champion_metrics(champion, test_metrics)
 

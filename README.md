@@ -162,7 +162,7 @@ uv run ruff check .
 uv run pytest
 ```
 
-A CI verifica sintaxe, formatação, lint, 27 testes com cobertura mínima de 80%, `dvc repro`,
+A CI verifica sintaxe, formatação, lint, 32 testes com cobertura mínima de 80%, `dvc repro`,
 quality gate do modelo, build do Docker e um smoke test do contêiner em pushes e pull
 requests. Execuções concorrentes da mesma branch são canceladas para economizar tempo de CI.
 
@@ -228,6 +228,7 @@ Request, mantendo no histórico a responsabilidade real de cada integrante.
 | Claudia Park | Pipeline MLOps, DVC/MLflow, avaliação, documentação, testes e quality gate |
 | Leonardo Oliveira | Automação da CI, visualização do DAG do DVC e publicação de artefatos do pipeline |
 | Lucas Balduino | Fixação da versão do `uv` no Docker, inclusão do MLPClassifier e comparação dos modelos |
+| Lincoln Tenório | Comentários explicativos, validações defensivas do treinamento e testes de falha |
 
 O histórico de commits e Pull Requests mantém a autoria original dessas alterações.
 
