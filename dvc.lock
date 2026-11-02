@@ -6,10 +6,18 @@ stages:
       --sha256 b3055ee355f59134d851d32641183cb4a8b45def7124d2f50442a042f358e0d9 
       --output data/raw/online_shoppers_intention.csv
     deps:
+    - path: pyproject.toml
+      hash: md5
+      md5: 11ba2a0a33a31ece898cd311775e5535
+      size: 1028
     - path: src/purchase_propensity/data/download.py
       hash: md5
-      md5: 3f8ebce977640eb5854f0b7a72bc21ca
-      size: 2193
+      md5: 0a2d7a564b58ba10c5aa1c68d9be9852
+      size: 2343
+    - path: uv.lock
+      hash: md5
+      md5: 03639e2f8f83e0e3318b6f23a7066106
+      size: 377144
     params:
       params.yaml:
         data.sha256: 
@@ -31,14 +39,22 @@ stages:
       hash: md5
       md5: cc6ec1db03b4f10f8de52c56ff48b085
       size: 1072063
+    - path: pyproject.toml
+      hash: md5
+      md5: 11ba2a0a33a31ece898cd311775e5535
+      size: 1028
     - path: src/purchase_propensity/data/prepare.py
       hash: md5
-      md5: 230559a520d7a39eb6aad44707a4e12d
-      size: 3094
+      md5: a573606affb930f7bf21f9a43186b4c8
+      size: 3332
     - path: src/purchase_propensity/schema.py
       hash: md5
-      md5: 7088035cdb33e53fdef7ca023adae064
-      size: 602
+      md5: 5d658747d95a34bac6b83bbfacc9e15a
+      size: 689
+    - path: uv.lock
+      hash: md5
+      md5: 03639e2f8f83e0e3318b6f23a7066106
+      size: 377144
     params:
       params.yaml:
         split.random_state: 42
@@ -70,30 +86,38 @@ stages:
       hash: md5
       md5: 5baec3151425b828e795e1669c922e0c
       size: 887608
+    - path: pyproject.toml
+      hash: md5
+      md5: 11ba2a0a33a31ece898cd311775e5535
+      size: 1028
     - path: src/purchase_propensity/modeling/candidates.py
       hash: md5
-      md5: 705fadf7d6911b298700fa36c53698ea
-      size: 3042
+      md5: f10ba2765aeaf78405b96ee4e99792a3
+      size: 3124
     - path: src/purchase_propensity/modeling/metrics.py
       hash: md5
-      md5: afbe96096d2d1a657c2bd4663db52afb
-      size: 1942
+      md5: c790723a96acc3c48e069692fca2c055
+      size: 2034
     - path: src/purchase_propensity/modeling/quality_gate.py
       hash: md5
       md5: 4093d9759baed37c2277cd1b94981804
       size: 2636
     - path: src/purchase_propensity/modeling/registry.py
       hash: md5
-      md5: f88a36bdd136fc10e5821c3dca671528
-      size: 605
+      md5: b00a81c11a508b87ce29a799ff8a83dc
+      size: 695
     - path: src/purchase_propensity/schema.py
       hash: md5
-      md5: 7088035cdb33e53fdef7ca023adae064
-      size: 602
+      md5: 5d658747d95a34bac6b83bbfacc9e15a
+      size: 689
     - path: src/purchase_propensity/training/train.py
       hash: md5
-      md5: 39ea2454d940e53f9877f97324e307ef
-      size: 10278
+      md5: 8975cb02d23428da0a41945be6162386
+      size: 10820
+    - path: uv.lock
+      hash: md5
+      md5: 03639e2f8f83e0e3318b6f23a7066106
+      size: 377144
     params:
       params.yaml:
         evaluation.threshold: 0.5
